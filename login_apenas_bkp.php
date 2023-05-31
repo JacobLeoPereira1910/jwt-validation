@@ -19,6 +19,10 @@ $pdo = Connection::connect();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $requestData = json_decode(file_get_contents('php://input'), true); // Recebe os dados como JSON
 
+  echo "<pre>";
+  print_r($requestData);
+  echo "</pre>";
+
   if (isset($requestData['email']) && isset($requestData['senha'])) {
     $email = $requestData['email'];
     $senha = $requestData['senha'];
@@ -30,19 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
     $users = $statement->fetchAll();
 
-
-    $items = json_decode(json_encode($users), false);
-
-    foreach ($items as $key => $item) {
-      $userEmail = $item->email;
-      $userPassword = $item->password;
-
-      if ($userEmail === $email && $userPassword === $senha) {
-        echo "Login realizado com sucesso!";
-        echo json_encode(array('message' => 'Login realizado com sucesso.'));
-      } else {
-        echo "Credenciais invalidas";
-      }
+    if (!empty($users)) {
+      echo "Login realizado com sucesso!";
+      echo json_encode(array('message' => 'Login realizado com sucesso.'));
+    } else {
+      echo "Credenciais inválidas";
     }
   }
 }
