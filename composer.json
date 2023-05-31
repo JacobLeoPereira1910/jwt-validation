@@ -1,0 +1,17 @@
+{
+    "name": "ljacob/scsp",
+    "autoload": {
+        "psr-4": {
+            "app\\": "app"
+        }
+    },
+    "description": "teste",
+    "authors": [
+        {
+            "name": "Leonardo"
+        }
+    ],
+    "require": {
+        "nowakowskir/php-jwt": "^2.1"
+    }
+}

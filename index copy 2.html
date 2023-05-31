@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Autenticacão SCSP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+  <div class="container first-container">
+    <div class="row">
+
+      <div class="col" id="logged">
+        <div class="container form-container">
+          <form id="form">
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="Email" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label">Senha</label>
+              <input type="password" class="form-control" name="senha" placeholder="Senha" id="password">
+            </div>
+            <div class="mb-3 form-check">
+              <i class="fa-regular fa-eye" id="show-eye"></i><i style="display: none;" class="fa-regular fa-eye-slash" id="hide-eye"></i>
+
+            </div>
+            <button type="submit" class="btn btn-primary btn-login">Login</button>
+            <button id="btn_check_auth" class="btn btn-primary btn-auth">Verificar autenticação</button>
+          </form>
+          <div class="mb-3">
+
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+
+
+  <script>
+    const btnShow = document.getElementById('show-eye')
+    const btnHide = document.getElementById('hide-eye')
+    const pwd = document.getElementById('password')
+
+    btnShow.addEventListener('click', () => {
+      pwd.type = 'text'
+      if (pwd.type == "text") {
+        btnShow.style.display = "none"
+        btnHide.style.display = "block"
+      } else {
+        btnShow.style.display = "inline"
+        btnHide.style.display = "none"
+      }
+    })
+
+    btnHide.addEventListener('click', () => {
+      pwd.type = 'password'
+      if (pwd.type === "password") {
+        btnHide.style.display = "none"
+        btnShow.style.display = "inline"
+      } else {
+        btnHide.style.display = "block"
+        btnShow.style.display = "none"
+      }
+    })
+
+
+    const form = document.querySelector("#form");
+    const btn_check_auth = document.querySelector("#btn_check_auth");
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const url = 'https://localhost/scsp/public/login.php'; // Altere o URL para o arquivo PHP correspondente
+
+      const data = {
+        email: formData.get('email'),
+        senha: formData.get('senha')
+      };
+
+      fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(data)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erro na requisição');
+          }
+          return response.json();
+        })
+        .then(responseData => {
+          console.log(responseData);
+          // Faça algo com a resposta da requisição
+        })
+        .catch(error => {
+          console.error(error);
+          // Trate o erro adequadamente
+        });
+    });
+  </script>
+
+</body>
+
+</html>

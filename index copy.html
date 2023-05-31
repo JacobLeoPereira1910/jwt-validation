@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Curso de JWT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+
+
+      <div style="text-align: center;">
+        <div id="logged"></div>
+      </div>
+
+      <div style="display:flex; align-items: center;justify-content: center; height: 100vh;">
+
+        <div>
+          <form class="form-control" id="form">
+            <input class="form-control" type="text" name="email" placeholder="Email" value="jpsleonardo@icloud.com">
+            <input class="form-control" type="password" name="senha" placeholder="Senha" value="leogel123">
+            <button type="submit" class="btn btn-primary btn-login">Login</button>
+          </form>
+        </div>
+        |
+        <div>
+          <button id="btn_check_auth" class="btn btn-info btn-auth">Verificar autenticação</button>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+
+  <script>
+    const form = document.querySelector("#form");
+    const btn_check_auth = document.querySelector("#btn_check_auth");
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const url = 'https://localhost/scsp/public/login.php'; // Altere o URL para o arquivo PHP correspondente
+
+      const data = {
+        email: formData.get('email'),
+        senha: formData.get('senha')
+      };
+
+      fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erro na requisição');
+          }
+          return response.json();
+        })
+        .then(responseData => {
+          console.log(responseData);
+          // Faça algo com a resposta da requisição
+        })
+        .catch(error => {
+          console.error(error);
+          // Trate o erro adequadamente
+        });
+    });
+
+  </script>
+
+</body>
+
+</html>
