@@ -5,9 +5,10 @@ header("Content-Type: application/json");
 require '../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
+use Nowakowskir\JWT\JWT as JWTJWT;
 
-$key = '';
-
+$dotenv = Dotenv\Dotenv::createImmutable('C:/xampp/htdocs/scsp');
+$dotenv->load();
 
 class Connection
 {
@@ -28,8 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $requestData['email'];
     $password = $requestData['password'];
 
-    var_dump($password);
-
     $statement = $pdo->prepare("SELECT * FROM users WHERE email = :email AND password = :password");
     $statement->execute([
       "email" => $email,
@@ -38,9 +37,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userFound = $statement->fetchAll();
 
     if (count($userFound) > 0) {
-      echo "login realizado";
+
     } else {
       http_response_code(401);
     }
   }
+
+
+  $payload = [
+    "exp" => time() + 10,
+    "iat" => time(),
+    "email" => $email
+  ];
+
+
+  $encode = JWT::encode($payload, $_ENV['KEY'], 'HS256');
+
+  echo json_encode($encode);
 }

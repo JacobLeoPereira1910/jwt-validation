@@ -12,6 +12,8 @@
         }
     ],
     "require": {
-        "nowakowskir/php-jwt": "^2.1"
+        "nowakowskir/php-jwt": "^2.1",
+        "vlucas/phpdotenv": "^5.5",
+        "firebase/php-jwt": "^6.5"
     }
 }
