@@ -41,6 +41,8 @@
   <script>
     const passwordInput = document.getElementById('password');
     const togglePasswordButton = document.getElementById('toggle-password');
+    const form = document.querySelector('#form');
+    const buttonCheck = document.querySelector('#btn-check-key')
 
     togglePasswordButton.addEventListener('click', () => {
       const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -48,9 +50,6 @@
       togglePasswordButton.innerHTML = `<i class="fa-regular fa-eye${type === 'text' ? '-slash' : ''}"></i>`;
       passwordInput.focus();
     });
-
-    const form = document.querySelector('#form');
-    const buttonCheck = document.querySelector('#btn-check-key')
 
     form.addEventListener('submit', async function(event) {
       event.preventDefault();
@@ -75,32 +74,35 @@
 
         const responseData = await response.json();
         console.log(responseData);
-        sessionStorage.setItem('session', responseData)
-        // Faça algo com a resposta da requisição
+        sessionStorage.setItem('session', responseData);
+        checkAuthentication();
       } catch (error) {
         console.error(error);
         // Trate o erro adequadamente
       }
     });
 
-    buttonCheck.addEventListener('click', async () => {
+    buttonCheck.addEventListener('click', async (event) => {
+      event.preventDefault();
+
       try {
         const url = 'https://localhost/scsp/public/auth.php';
-        const dataSession = 'Bearer ' + sessionStorage.getItem('session')
-        const {
-          data
-        } = await fetch(url, {
-          method: 'get',
-          headers:{
-            'Authorization': dataSession
-          }
-          //body: JSON.stringify(data)
-        });
-      } catch {
-        error
-        console.log(error)
+        const dataSession = sessionStorage.getItem('session');
+        console.log('Esta é a dataSession: ' + dataSession);
+        const response = await fetch(url + '?session=' + encodeURIComponent(dataSession));
+
+        if (!response.ok) {
+          throw new Error('Erro na requisição');
+        }
+
+        const responseData = await response.json();
+        console.log(responseData);
+        // Faça algo com a resposta da requisição GET
+      } catch (error) {
+        console.error(error);
+        // Trate o erro adequadamente
       }
-    })
+    });
   </script>
 </body>
 
