@@ -31,7 +31,7 @@
               </div>
             </div>
             <button type="submit" class="btn btn-primary btn-login">Login</button>
-            <button id="btn_check_auth" class="btn btn-primary btn-auth">Verificar autenticação</button>
+            <button id="btn-check-key" class="btn btn-primary btn-auth">Verificar autenticação</button>
           </form>
         </div>
       </div>
@@ -49,7 +49,8 @@
       passwordInput.focus();
     });
 
-    const form = document.querySelector("#form");
+    const form = document.querySelector('#form');
+    const buttonCheck = document.querySelector('#btn-check-key')
 
     form.addEventListener('submit', async function(event) {
       event.preventDefault();
@@ -74,12 +75,32 @@
 
         const responseData = await response.json();
         console.log(responseData);
+        sessionStorage.setItem('session', responseData)
         // Faça algo com a resposta da requisição
       } catch (error) {
         console.error(error);
         // Trate o erro adequadamente
       }
     });
+
+    buttonCheck.addEventListener('click', async () => {
+      try {
+        const url = 'https://localhost/scsp/public/auth.php';
+        const dataSession = 'Bearer ' + sessionStorage.getItem('session')
+        const {
+          data
+        } = await fetch(url, {
+          method: 'get',
+          headers:{
+            'Authorization': dataSession
+          }
+          //body: JSON.stringify(data)
+        });
+      } catch {
+        error
+        console.log(error)
+      }
+    })
   </script>
 </body>
 
