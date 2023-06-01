@@ -51,7 +51,7 @@
       passwordInput.focus();
     });
 
-    form.addEventListener('submit', async function(event) {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
       const formData = new FormData(event.target);
@@ -88,10 +88,10 @@
       try {
         const url = 'https://localhost/scsp/public/auth.php';
         const dataSession = sessionStorage.getItem('session');
-        console.log('Bearer ' + dataSession);
+        console.log(`Bearer ${dataSession}`);
         const response = await fetch(url, {
           headers: {
-            'Authorization': 'Bearer ' + dataSession
+            'Authorization': `Bearer ${dataSession}`
           }
         });
 
