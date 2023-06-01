@@ -37,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userFound = $statement->fetchAll();
 
     if (count($userFound) > 0) {
-
     } else {
       http_response_code(401);
     }
