@@ -88,15 +88,19 @@
       try {
         const url = 'https://localhost/scsp/public/auth.php';
         const dataSession = sessionStorage.getItem('session');
-        console.log('Esta é a dataSession: ' + dataSession);
-        const response = await fetch(url + '?session=' + encodeURIComponent(dataSession));
+        console.log('Bearer ' + dataSession);
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': 'Bearer ' + dataSession
+          }
+        });
 
         if (!response.ok) {
           throw new Error('Erro na requisição');
         }
 
         const responseData = await response.json();
-        console.log(responseData);
+        console.log(response);
         // Faça algo com a resposta da requisição GET
       } catch (error) {
         console.error(error);
