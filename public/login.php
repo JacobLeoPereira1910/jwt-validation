@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
   $payload = [
-    "exp" => time() + 10,
+    "exp" => time() + 4,
     "iat" => time(),
     "email" => $email
   ];

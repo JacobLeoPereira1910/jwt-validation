@@ -8,7 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body class="bg-gray-100">
@@ -17,19 +19,24 @@
       <form id="form">
         <div class="mb-4">
           <label for="email" class="block mb-2 text-sm font-medium text-gray-700">Email</label>
-          <input type="email" class="form-input" id="email" name="email" placeholder="Email" value="jpsleonardo@icloud.com">
+          <input type="email" class="form-input" id="email" name="email" placeholder="Email"
+            value="jpsleonardo@icloud.com">
         </div>
         <div class="mb-4">
           <label for="password" class="block mb-2 text-sm font-medium text-gray-700">Senha</label>
           <div class="relative">
-            <input type="password" class="form-input pr-10" name="password" placeholder="Senha" id="password" value="leogel123">
+            <input type="password" class="form-input pr-10" name="password" placeholder="Senha" id="password"
+              value="leogel123">
             <button class="absolute inset-y-0 right-0 pr-3 flex items-center" type="button" id="toggle-password">
               <i class="fa-regular fa-eye"></i>
             </button>
           </div>
         </div>
-        <button type="submit" class="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">Login</button>
-        <button id="btn-check-key" class="w-full mt-2 py-2 px-4 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">Verificar autenticação</button>
+        <button type="submit"
+          class="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">Login</button>
+        <button id="btn-check-key"
+          class="w-full mt-2 py-2 px-4 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">Verificar
+          autenticação</button>
       </form>
     </div>
   </div>
@@ -47,7 +54,7 @@
       passwordInput.focus();
     });
 
-    form.addEventListener('submit', async function(event) {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
       const formData = new FormData(event.target);
@@ -84,10 +91,10 @@
       try {
         const url = 'https://localhost/scsp/public/auth.php';
         const dataSession = sessionStorage.getItem('session');
-        console.log('Bearer ' + dataSession);
+        console.log(`Bearer ${dataSession}`);
         const response = await fetch(url, {
           headers: {
-            'Authorization': 'Bearer ' + dataSession
+            'Authorization': `Bearer ${dataSession}`
           }
         });
 
@@ -103,6 +110,7 @@
         // Trate o erro adequadamente
       }
     });
+
   </script>
 </body>
 
