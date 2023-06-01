@@ -8,20 +8,23 @@ use Firebase\JWT\Key;
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Authorization, Content-Type, x-xsrf-token, x_csrftoken, Cache-Control, X-Requested-With');
 
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__FILE__, 2));
+$dotenv = Dotenv\Dotenv::createImmutable('C:/xampp/htdocs/scsp');
 $dotenv->load();
 
-$authorization = $_SERVER['HTTP_AUTHORIZATION'];
+$headers = apache_request_headers();
+$authorizationHeader = $headers['Authorization'];
 
-$token = str_replace('Bearer ', '', $authorization);
+// Verifique se o cabeçalho de autorização está presente e começa com "Bearer "
+if (isset($authorizationHeader) && strpos($authorizationHeader, 'Bearer ') === 0) {
+    // Extraia o token JWT removendo a parte "Bearer " do cabeçalho
+    $token = substr($authorizationHeader, 7);
 
-try {
-    // $decoded = JWT::decode($token, $_SERVER['KEY'], ['HS256']);
-    $decoded = JWT::decode($token, new Key($_SERVER['KEY'], 'HS256'));
-    echo json_encode($decoded);
-} catch (Throwable $e) {
-    if ($e->getMessage() === 'Expired token') {
-        http_response_code(401);
-        die('EXPIRED');
-    }
+    echo "<pre>";
+    print_r(json_encode($token));
+    echo "</pre>";    // Faça algo com o token JWT
+    // ...
+} else {
+    // O cabeçalho de autorização está ausente ou não está no formato correto
+    // Lide com o erro adequadamente
+    echo "<script>alert('Sem o token')</script>";
 }
