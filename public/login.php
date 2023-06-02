@@ -36,21 +36,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
     $userFound = $statement->fetchAll();
 
+    // ...
+
     if (count($userFound) > 0) {
+      $payload = [
+        "exp" => time() + 600,
+        "iat" => time(),
+        "email" => $email
+      ];
+
+      $encode = JWT::encode($payload, $_ENV['KEY'], 'HS256');
+
+      // Armazene o token na sessão
+      session_start();
+      $_SESSION['token'] = 'Bearer ' . $token;
+
+      // Redirecione o usuário para a página protegida
+      header("Location: http://localhost/scsp/public/dashboard.php");
+      exit();
     } else {
       http_response_code(401);
+      die('Credenciais inválidas');
     }
+
+    // ...
+
   }
-
-
-  $payload = [
-    "exp" => time() + 4,
-    "iat" => time(),
-    "email" => $email
-  ];
-
-
-  $encode = JWT::encode($payload, $_ENV['KEY'], 'HS256');
-
-  echo json_encode($encode);
 }

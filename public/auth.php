@@ -1,39 +1,48 @@
 <?php
+session_start();
+header("Access-Control-Allow-Origin: *");
 
 require '../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-use Nowakowskir\JWT\TokenDecoded;
-
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: Authorization, Content-Type, x-xsrf-token, x_csrftoken, Cache-Control, X-Requested-With');
 
 $dotenv = Dotenv\Dotenv::createImmutable('C:/xampp/htdocs/scsp');
 $dotenv->load();
 
-$headers = apache_request_headers();
+$secretKey = $_ENV['KEY'];
 
-$authorizationHeader = $headers['Authorization'];
+if (!isset($_SESSION['token'])) {
+    http_response_code(401);
+    die('Token não encontrado');
+}
 
-// Verifique se o cabeçalho de autorização está presente e começa com "Bearer "
-//if (isset($authorizationHeader) && strpos($authorizationHeader, 'Bearer ') === 0) {
-
-// removendo a string 'Bearer ' do token JWT 
-$token = str_replace('Bearer ', '', $authorizationHeader);
-$secretKey = $_SERVER['KEY'];
+$token = $_SESSION['token'];
 
 try {
-    $decoded = JWT::decode($token, new Key($secretKey, 'HS256'));
-    echo json_encode($decoded);
-} catch (Throwable $e) {
-    if ($e->getMessage() === "Expired token") {
+    // Decodifique e verifique o token utilizando a chave secreta
+    $decoded = JWT::decode($token, $secretKey, ['HS256']);
+
+    // Verifique se o token não está expirado
+    if ($decoded->exp < time()) {
         http_response_code(401);
-        die($e->getMessage());
+        die('Token expirado');
     }
+
+    // O token é válido, permita que o usuário acesse a página protegida e execute as requisições no banco de dados
+
+    // Exemplo: Buscar os dados do usuário no banco de dados
+    $pdo = new PDO("mysql:host=localhost;dbname=dados", "root", "");
+    $email = $decoded->email;
+    $statement = $pdo->prepare("SELECT * FROM users WHERE email = :email");
+    $statement->execute(["email" => $email]);
+    $user = $statement->fetch(PDO::FETCH_ASSOC);
+
+    // Exemplo: Enviar os dados do usuário como resposta em formato JSON
+    header("Content-Type: application/json");
+    echo json_encode($user);
+
+} catch (Throwable $e) {
+    http_response_code(401);
+    die('Token inválido');
 }
-//} //else {
-    // O cabeçalho de autorização está ausente ou não está no formato correto
-    // Lide com o erro adequadamente
-  //  echo "<script>alert('Sem o token')</script>";
-//}
+?>

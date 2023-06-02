@@ -3,7 +3,7 @@
         'name' => 'ljacob/scsp',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '6c6921545ca6ea5f81b9c7e526f9a0f9e0db777b',
+        'reference' => '85e64af6766bef72888ecbf5efdca6f0de7035e3',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'ljacob/scsp' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '6c6921545ca6ea5f81b9c7e526f9a0f9e0db777b',
+            'reference' => '85e64af6766bef72888ecbf5efdca6f0de7035e3',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
