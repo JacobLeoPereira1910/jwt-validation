@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -15,7 +16,7 @@
     <div class="row">
       <div class="col" id="logged">
         <div class="container form-container">
-          <form id="form">
+          <form id="form" method="POST">
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
               <input type="email" class="form-control" id="email" name="email" placeholder="Email" aria-describedby="emailHelp" value="jpsleonardo@icloud.com" required>
@@ -32,11 +33,11 @@
             <button type="submit" class="btn btn-primary btn-login">Login</button>
             <button id="btn-check-key" class="btn btn-primary btn-auth" disabled>Verificar autenticação</button>
           </form>
+          <div id="error-container"></div> <!-- Novo elemento para exibir mensagens de erro -->
         </div>
       </div>
     </div>
   </div>
-
 
   <script>
     const passwordInput = document.getElementById('password');
@@ -52,13 +53,15 @@
       passwordInput.focus();
     });
 
+    buttonCheck.disabled = true; // Desabilita o botão de verificação inicialmente
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
       const formData = new FormData(event.target);
       const url = 'http://localhost/scsp/public/login.php';
 
-      const data = {
+      const requestPayload = {
         email: formData.get('email'),
         password: formData.get('password')
       };
@@ -66,19 +69,36 @@
       try {
         const response = await fetch(url, {
           method: 'POST',
-          body: JSON.stringify(data)
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestPayload)
+
         });
 
         if (!response.ok) {
           throw new Error('Erro na requisição');
         }
 
-        const responseData = await response.text();
-        sessionStorage.setItem('session', responseData);
-        window.location.href = 'http://localhost/scsp/public/dashboard.php';
+        const responseRequest = await response.json();
+
+        // Verifique se o token foi recebido corretamente
+        if (responseRequest && responseRequest !== '') {
+          // Armazena o token na sessão
+          sessionStorage.setItem('token', responseRequest);
+
+          // Habilita o botão de verificação
+          buttonCheck.disabled = false;
+
+          // Limpa os campos de email e senha
+          form.reset();
+        } else {
+          throw new Error('Token não recebido');
+        }
       } catch (error) {
         console.error(error);
-        // Trate o erro adequadamente
+        // Exiba uma mensagem de erro específica
+        errorContainer.innerText = error.message;
       }
     });
 
@@ -87,35 +107,33 @@
 
       try {
         const url = 'http://localhost/scsp/public/auth.php';
-        const dataSession = sessionStorage.getItem('session');
-        console.log(`Bearer ${dataSession}`);
-        const response = await fetch(url, {
+        const token = sessionStorage.getItem('token');
+        const authSession = 'Bearer ' + token;
+
+        const responseRequest = await fetch(url, {
           headers: {
-            'Authorization': `Bearer ${dataSession}`
+            //'Content-Type': 'application/json',
+            'JWT-TOKEN': authSession
           }
         });
 
-        if (!response.ok) {
-          console.error(response);
-          if (response.status === 401) {
-            throw new Error('Expired token');
+        if (responseRequest.status === 200) {
+          const index = await responseRequest.json();
+          window.location.href = 'http://localhost/scsp/public/dashboard.php';
+        } else {
+          const errorText = await responseRequest.text();
+          console.log(errorText); // Exibe a mensagem no console
+          if (errorText === 'Expired token') {
+            alert('O Token expirou, faça o login novamente!')
           }
-          throw new Error('Erro na requisição');
         }
-
-        const responseData = await response.json();
-        console.log(responseData.email);
-        // Faça algo com a resposta da requisição GET
       } catch (error) {
-        let erros = error.responseData?.data;
-        if (erros === undefined || error.message === 'Expired token') {
-          alert("Sessão Expirou");
-        }
-
-        // Trate o erro adequadamente
+        const mensagemErro = error;
+        console.log(mensagemErro);
       }
     });
   </script>
+
 </body>
 
 </html>

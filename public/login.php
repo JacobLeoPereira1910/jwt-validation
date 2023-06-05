@@ -1,65 +1,50 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost");
+session_start();
+header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
 require '../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
-use Nowakowskir\JWT\JWT as JWTJWT;
+use app\database\Connection;
 
 $dotenv = Dotenv\Dotenv::createImmutable('C:/xampp/htdocs/scsp');
 $dotenv->load();
 
-class Connection
-{
-  public static function connect()
-  {
-    return new PDO("mysql:host=localhost;dbname=dados", "root", "", [
-      PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-    ]);
-  }
-}
-
 $pdo = Connection::connect();
+$key = $_ENV['KEY'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $requestData = json_decode(file_get_contents('php://input'), true); // Recebe os dados como JSON
+// Obter o corpo da requisição
+$requestBody = file_get_contents('php://input');
+$data = json_decode($requestBody, true);
 
-  if (isset($requestData['email']) && isset($requestData['password'])) {
-    $email = $requestData['email'];
-    $password = $requestData['password'];
+// Verificar se o email e senha estão presentes
+if (isset($data['email']) && isset($data['password'])) {
+  $email = $data['email'];
+  $password = $data['password'];
 
-    $statement = $pdo->prepare("SELECT * FROM users WHERE email = :email AND password = :password");
-    $statement->execute([
-      "email" => $email,
-      "password" => $password
-    ]);
-    $userFound = $statement->fetchAll();
+  $statement = $pdo->prepare("SELECT * FROM users WHERE email = :email AND password = :password");
+  $statement->execute([
+    "email" => $email,
+    "password" => $password
+  ]);
+  $userFound = $statement->fetchAll();
 
-    // ...
+  if (count($userFound) > 0) {
+    $payload = [
+      "exp" => time() + 2,
+      "iat" => time(),
+      "email" => $email
+    ];
 
-    if (count($userFound) > 0) {
-      $payload = [
-        "exp" => time() + 600,
-        "iat" => time(),
-        "email" => $email
-      ];
+    $token = JWT::encode($payload, $key, 'HS256');
 
-      $encode = JWT::encode($payload, $_ENV['KEY'], 'HS256');
-
-      // Armazene o token na sessão
-      session_start();
-      $_SESSION['token'] = 'Bearer ' . $token;
-
-      // Redirecione o usuário para a página protegida
-      header("Location: http://localhost/scsp/public/dashboard.php");
-      exit();
-    } else {
-      http_response_code(401);
-      die('Credenciais inválidas');
-    }
-
-    // ...
-
+    echo json_encode($token);
+  } else {
+    http_response_code(401);
+    die('Credenciais inválidas');
   }
+} else {
+  http_response_code(400);
+  echo json_encode(["error" => "Dados inválidos"]);
 }

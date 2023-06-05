@@ -1,48 +1,42 @@
 <?php
 session_start();
 header("Access-Control-Allow-Origin: *");
+header('Access-Control-Allow-Headers: Authorization, Content-Type, x-xsrf-token, x_csrftoken, Cache-Control, X-Requested-With');
 
 require '../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
+use app\database\Connection;
+use Firebase\JWT\Key;
 
 $dotenv = Dotenv\Dotenv::createImmutable('C:/xampp/htdocs/scsp');
 $dotenv->load();
 
-$secretKey = $_ENV['KEY'];
+$pdo = Connection::connect();
+$key = $_ENV['KEY'];
 
-if (!isset($_SESSION['token'])) {
+// Verifica se o cabeçalho JWT_TOKEN está presente na requisição
+if (!isset($_SERVER['HTTP_JWT_TOKEN'])) {
     http_response_code(401);
-    die('Token não encontrado');
+    die('Token não fornecido');
 }
 
-$token = $_SESSION['token'];
+$JwtToken = $_SERVER['HTTP_JWT_TOKEN'];
+
+$token = str_replace('Bearer ', '', $JwtToken);
 
 try {
-    // Decodifique e verifique o token utilizando a chave secreta
-    $decoded = JWT::decode($token, $secretKey, ['HS256']);
-
-    // Verifique se o token não está expirado
-    if ($decoded->exp < time()) {
-        http_response_code(401);
-        die('Token expirado');
-    }
-
-    // O token é válido, permita que o usuário acesse a página protegida e execute as requisições no banco de dados
-
-    // Exemplo: Buscar os dados do usuário no banco de dados
-    $pdo = new PDO("mysql:host=localhost;dbname=dados", "root", "");
+    // Decodifica o token JWT
+    $decoded = JWT::decode($token, new Key($key, 'HS256'));
     $email = $decoded->email;
     $statement = $pdo->prepare("SELECT * FROM users WHERE email = :email");
     $statement->execute(["email" => $email]);
-    $user = $statement->fetch(PDO::FETCH_ASSOC);
+    $verifiedUser = $statement->fetch();
 
-    // Exemplo: Enviar os dados do usuário como resposta em formato JSON
-    header("Content-Type: application/json");
-    echo json_encode($user);
-
+    if (isset($verifiedUser)) {
+        echo json_encode($decoded);
+    }
 } catch (Throwable $e) {
+    echo strval($e->getMessage());
     http_response_code(401);
-    die('Token inválido');
 }
-?>
